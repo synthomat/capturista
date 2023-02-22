@@ -1,0 +1,33 @@
+{% extends "_base.html" %}
+
+{% block page %}
+<h1>Edit {{ cs.name }}</h1>
+<form class="pure-form pure-form-stacked" action="" method="post">
+    <fieldset>
+        <legend>A Stacked Form</legend>
+        <label for="stacked-email">Name</label>
+        <input type="text" name="name" class="pure-input-1" value="{{ cs.name }}"/>
+        <label for="stacked-password">Page URL</label>
+        <input type="text" class="pure-input-1" name="url" value="{{ cs.params.url }}"/>
+        <label for="stacked-state">Capture Type</label>
+
+        <select id="stacked-state" name="capture_type" hx-get="/api/capture_types/slots" hx-target="#slots">
+            {% for ct in capture_types %}
+                <option {{ 'selected' if cs.capture_type == ct }}>{{ ct }}</option>
+            {% endfor %}
+        </select>
+
+        <div id="slots">
+            {% include 'slots.html' %}
+        </div>
+
+        <button type="submit" class="pure-button pure-button-primary">Save</button> or <a href="/">cancel</a>
+        <hr>
+        <div style="margin-top: 100px">
+            <a href="" hx-delete="/api/sources/{{ cs.id }}" class="pure-button danger-button">Delete</a>
+        </div>
+
+
+    </fieldset>
+</form>
+{% endblock %}

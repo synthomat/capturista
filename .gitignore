@@ -1,0 +1,4 @@
+/db.json
+*.pyc
+static/screencaptures/*
+.idea
