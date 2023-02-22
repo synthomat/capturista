@@ -1,4 +1,4 @@
 /db.json
 *.pyc
-static/screencaptures/*
+static/screencaptures/*.png
 .idea

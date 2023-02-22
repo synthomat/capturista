@@ -35,7 +35,7 @@ class KibanaLoader(AbstractLoader):
         page.click('button[type="submit"]')
 
         # wait for page reaction
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(3000)
 
         login_error = page.locator('div[data-test-subj="loginErrorMessage"]')
 
@@ -45,12 +45,12 @@ class KibanaLoader(AbstractLoader):
             sys.exit(1)
 
         # after successful login we wait again for the page to build up fully
-        page.wait_for_timeout(4000)
+        page.wait_for_timeout(6000)
         self.update_status("logged in successfully")
 
         page.click('button[data-test-subj="dashboardFullScreenMode"]')
         page.click('button[data-test-subj="toastCloseButton"]')
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(2000)
 
         self.update_status("taking screen capture")
         original_path = f"static/screencaptures/{self.task.config_id}.png"
