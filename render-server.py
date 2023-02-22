@@ -9,6 +9,7 @@ from tinydb import TinyDB, Query
 
 from loaders.kibana_loader import KibanaLoader
 from loaders.web_loader import WebLoader
+from loaders.tableau_loader import TableauLoader
 
 app = Flask(__name__)
 
@@ -39,7 +40,8 @@ manager = Manager()
 
 LOADER_TYPES = {
     "web": WebLoader,
-    "kibana": KibanaLoader
+    "kibana": KibanaLoader,
+    "tableau": TableauLoader
 }
 
 import time
@@ -56,12 +58,13 @@ class Scheduler(threading.Thread):
                 task = CaptureTask(
                     config['id'],
                     config['capture_type'],
-                    params=config.get('params')
+                    params=config.get('params'),
+                    slot_params=config.get('slot_params')
                 )
 
                 TASK_QUEUE.put(task)
 
-            time.sleep(60 * 1)
+            time.sleep(60 * 10)
 
 
 class Consumer(threading.Thread):
@@ -90,7 +93,7 @@ class Consumer(threading.Thread):
 
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     Consumer().start()
-    # Scheduler().start()
+    Scheduler().start()
 
 
 class CaptureSource:
