@@ -1,3 +1,4 @@
+import logging
 import os
 import threading
 import uuid
@@ -82,13 +83,11 @@ class Consumer(threading.Thread):
             if not loader_cls:
                 continue
 
-            loader = loader_cls(manager, task)
-            loader.handle()
-            # source = WebLoader(_id, manager)
-            # source.handle()
-
-            # LOADERS[_id]["last_run"] = datetime.now()
-            # LOADERS[_id]["status"] = "finished"
+            try:
+                loader = loader_cls(manager, task)
+                loader.handle()
+            except Exception as e:
+                logging.error(e)
 
 
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
