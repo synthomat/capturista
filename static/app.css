@@ -1,0 +1,8 @@
+body {
+    padding: 20px;
+}
+
+.danger-button {
+    background: rgb(202, 60, 60);
+    color: white;
+}

@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+
+{% block page %}
+<h1>Capturista!</h1>
+<p><a class="pure-button  pure-button-primary" href="/sources/new">Create New</a></p>
+<table class="pure-table pure-table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Last run</th>
+        <th>Status</th>
+        <th>Preview</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cs in capture_configs: %}
+        <tr data-cid="{{ cs.id }}">
+            <td>{{ cs.name }}</td>
+            <td>{{ cs.capture_type }}</td>
+            <td class="last-run">{{ cs.last_run or 'never' }}</td>
+            <td class="status">{{ cs.status or 'unknown' }}</td>
+            <td>
+                <a href="/static/screencaptures/{{ cs.id }}.png" target="_blank">
+                    <img src="/static/screencaptures/{{ cs.id }}.png" style="max-width: 200px" alt="">
+                </a>
+            </td>
+            <td>
+                <a href="#" hx-swap="none" hx-put="/api/sources/{{ cs.id }}/trigger">trigger</a>
+                | <a href="/sources/{{ cs.id }}/edit">edit</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

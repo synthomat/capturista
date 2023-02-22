@@ -1,0 +1,4 @@
+Flask==2.2.3
+Pillow==9.4.0
+playwright==1.30.0
+tinydb==4.7.1
