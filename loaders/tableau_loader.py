@@ -43,12 +43,12 @@ class TableauLoader(AbstractLoader):
         page.wait_for_timeout(6000)
         self.update_status("logged in successfully")
 
-        self.update_status("taking screen capture")
+        self.update_status("capturing screen")
         buffer = page.screenshot()
         self.manager.on_capture_result(self.task, buffer)
         # other actions...
         browser.close()
-        self.update_status("done capturing screen")
+        self.update_status("done")
 
     def handle(self):
         with sync_playwright() as playwright:

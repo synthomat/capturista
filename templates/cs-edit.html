@@ -5,11 +5,12 @@
         <h1>Edit {{ cs.name }}</h1>
         <form class="pure-form pure-form-stacked" action="" method="post">
             <fieldset>
-                <legend>A Stacked Form</legend>
-                <label for="stacked-email">Name</label>
-                <input type="text" name="name" class="pure-input-1" value="{{ cs.name }}"/>
-                <label for="stacked-password">Page URL</label>
-                <input type="text" class="pure-input-1" name="url" value="{{ cs.params.url }}"/>
+                <label for="stacked-name">Name</label>
+                <input type="text" id="stacked-name" name="name" class="pure-input-1" value="{{ cs.name }}"/>
+
+                <label for="stacked-url">Page URL</label>
+                <input type="text" id="stacked-url" class="pure-input-1" name="url" value="{{ cs.params.url }}"/>
+
                 <label for="stacked-state">Capture Type</label>
 
                 <select id="stacked-state" name="capture_type" hx-get="/api/capture_types/slots" hx-target="#slots">
@@ -18,6 +19,7 @@
                     {% endfor %}
                 </select>
 
+                <h2>Parameter Slots</h2>
                 <div id="slots">
                     {% include 'slots.html' %}
                 </div>

@@ -42,3 +42,16 @@ img.preview {
 table {
     width: 100%;
 }
+
+a:link, a:visited {
+    color: #0078e7;
+    text-decoration: none;
+}
+
+a.pure-button {
+    color: white;
+}
+
+.pure-menu a {
+    color: #666;
+}
