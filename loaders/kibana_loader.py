@@ -53,29 +53,11 @@ class KibanaLoader(AbstractLoader):
         page.wait_for_timeout(2000)
 
         self.update_status("taking screen capture")
-        original_path = f"static/screencaptures/{self.task.config_id}.png"
         buffer = page.screenshot()
         self.manager.on_capture_result(self.task, buffer)
         # other actions...
         browser.close()
-        """
-        image = Image.frombuffer(buffer)
-
-        d1 = ImageDraw.Draw(image)
-        font = ImageFont.truetype("Montserrat-Regular.ttf", 60)
-        d1.text((800, 20), datetime.now().strftime("%Y-%m-%d %H:%M:%S"), fill=(50, 50, 50), font=font)
-        image.save(original_path)
-
-        MAX_SIZE = (400, 400)
-        
-        image.thumbnail(MAX_SIZE)
-        
-        # creating thumbnail
-        image.save('static/screencaptures/b83d13d1-cf0a-4277-83bf-1e9ff16e5fa6.thumb.png')
-        """
         self.update_status("done capturing screen")
-
-        print("Done screencapture")
 
     def handle(self):
         with sync_playwright() as playwright:

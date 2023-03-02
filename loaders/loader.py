@@ -18,21 +18,12 @@ class AbstractLoader(ABC):
     def _stopped(self) -> bool:
         return self._stop_event.is_set()
 
-    def set_status(self, status):
-        pass
-
-    def update_status(self, status):
+    def update_status(self, status: str):
         self.manager.update_status_for(self.task, status)
 
     @abstractmethod
     def handle(self):
         raise NotImplementedError()
-
-    def run(self) -> None:
-        self.startup()
-        while not self._stopped():
-            self.handle()
-        self.shutdown()
 
     def set_config(self, config):
         self.config = config

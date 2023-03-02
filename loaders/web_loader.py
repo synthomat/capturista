@@ -35,7 +35,6 @@ class WebLoader(AbstractLoader):
         browser.close()
 
         self.update_status("done capturing screen")
-        print("Done screencapture")
 
     def handle(self):
         with sync_playwright() as playwright:
