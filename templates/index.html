@@ -1,9 +1,9 @@
 {% extends "_base.html" %}
 
 {% block page %}
-    <div class="pure-u-5-5">
+    <div class="pure-u-4-5">
 
-        <p><a class="pure-button  pure-button-primary" href="/sources/new">Create New</a></p>
+        <p><a class="pure-button pure-button-primary" href="/sources/new">Create New</a></p>
         <table class="pure-table pure-table-bordered">
             <thead>
             <tr>
@@ -36,5 +36,6 @@
             {% endfor %}
             </tbody>
         </table>
+    <p>Tasks waiting: <span id="queue-size">–</span></p>
     </div>
 {% endblock %}

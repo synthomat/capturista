@@ -3,7 +3,11 @@ window.addEventListener("load", (e) => {
         fetch("/api/states")
             .then(r => r.json())
             .then(j => {
-                j.forEach(cfg => {
+                document.getElementById("queue-size").textContent = j.queue_length
+
+                let instances = j.instances
+
+                instances.forEach(cfg => {
                     document.querySelector('tr[data-cid="' + cfg.id + '"] .status').textContent = cfg.status
                     document.querySelector('tr[data-cid="' + cfg.id + '"] .last-run').textContent = cfg.last_run
                 })

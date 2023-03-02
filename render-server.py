@@ -147,10 +147,15 @@ def trigger_source(id):
 def all_states():
     capture_configs = db.table('capture_configs')
     all = capture_configs.all()
+
     for a in all:
         del a['params']
+    state = dict(
+        instances=all,
+        queue_length=TASK_QUEUE.qsize()
+    )
 
-    return all
+    return state
 
 
 @app.get("/api/capture_types")
