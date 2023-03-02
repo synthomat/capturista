@@ -5,6 +5,13 @@ Capturista takes regular screen captures of websites.
 It can be used to capture protected websites. Under the hood it uses the [Playwright](https://playwright.dev/python/) framework and currently supports standard web, kibana and tableau sites.  
 New capture types can be easily integrated by extending the `AbstractLoader` class
 
+### Requirements
+Python 3
+
+### Stack
+* **Python 3** and **Flask**
+* **Playwright** for screenshots
+* **Pillow** for post processing images
 
 ### What's missing
 * Configuration is very limited and the interval time is pre-defined (every 10min) right now.
@@ -25,3 +32,4 @@ Install dependencies and Playwright browsers (this might take a while!)
 ## Run
     $ honcho start
 
+The tool is accessible at http://localhost:5000
