@@ -13,6 +13,10 @@ from loaders.kibana_loader import KibanaLoader
 from loaders.tableau_loader import TableauLoader
 from loaders.web_loader import WebLoader
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 app = Flask(__name__)
 
 db = TinyDB('db.json')
@@ -20,22 +24,36 @@ db = TinyDB('db.json')
 TASK_QUEUE = Queue()
 
 
+class CaptureTask:
+    def __init__(self, config_id, capture_type: str, params=None, slot_params=None):
+        self.config_id = config_id
+        self.capture_type = capture_type
+        self.params = params
+        self.slot_params = slot_params or {}
+
+
 class Manager:
     def __init__(self):
         self.messages = []
 
-    def update_status_for(self, task, status):
+    def update_status_for(self, task: CaptureTask, status):
         capture_configs = db.table('capture_configs')
         capture_configs.update(dict(status=status), Query().id == task.config_id)
 
-        print(f"{task.config_id}: {status}")
+        logger.info(f"{task.config_id}: {status}")
 
-    def on_capture_result(self, task, buffer):
+    def on_capture_result(self, task: CaptureTask, buffer):
         with open(f"static/screencaptures/{task.config_id}.png", 'wb') as f:
             f.write(buffer)
         capture_configs = db.table('capture_configs')
         capture_configs.update(dict(last_run=datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
                                Query().id == task.config_id)
+
+    def on_fail(self, task: CaptureTask, reason):
+        pass
+
+    def on_done(self, task: CaptureTask):
+        pass
 
 
 manager = Manager()
@@ -103,17 +121,9 @@ class CaptureSource:
 
 
 @app.route("/")
-def hello_world():
+def overview():
     capture_configs = db.table('capture_configs')
     return render_template("index.html", capture_configs=capture_configs)
-
-
-class CaptureTask:
-    def __init__(self, config_id, capture_type, params=None, slot_params=None):
-        self.config_id = config_id
-        self.capture_type = capture_type
-        self.params = params
-        self.slot_params = slot_params or {}
 
 
 @app.route("/api/sources/<id>/trigger", methods=["PUT"])
