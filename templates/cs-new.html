@@ -1,24 +1,27 @@
 {% extends "_base.html" %}
 
 {% block page %}
-<h1>New</h1>
-<form class="pure-form pure-form-stacked" action="" method="post">
-    <fieldset>
-        <legend>A Stacked Form</legend>
-        <label for="stacked-email">Name</label>
-        <input type="text" name="name" class="pure-input-1" value="{{ name }}"/>
-        <span class="pure-form-message">This is a required field.</span>
-        <label for="stacked-password">Page URL</label>
-        <input type="text" class="pure-input-1" name="url" value="{{ params and params.url }}"/>
-        <label for="stacked-state">Capture Type</label>
+    <div class="pure-u-4-5">
+        <h1>New</h1>
+        <form class="pure-form pure-form-stacked" action="" method="post">
+            <fieldset>
+                <legend>A Stacked Form</legend>
+                <label for="stacked-email">Name</label>
+                <input type="text" name="name" class="pure-input-1" value="{{ name }}"/>
+                <span class="pure-form-message">This is a required field.</span>
+                <label for="stacked-password">Page URL</label>
+                <input type="text" class="pure-input-1" name="url" value="{{ params and params.url }}"/>
+                <label for="stacked-state">Capture Type</label>
 
-        <select id="stacked-state" name="capture_type">
-            {% for ct in capture_types %}
-                <option>{{ ct }}</option>
-            {% endfor %}
-        </select>
+                <select id="stacked-state" name="capture_type">
+                    {% for ct in capture_types %}
+                        <option>{{ ct }}</option>
+                    {% endfor %}
+                </select>
 
-        <button type="submit" class="pure-button pure-button-primary">Create</button> or <a href="/">cancel</a>
-    </fieldset>
-</form>
+                <button type="submit" class="pure-button pure-button-primary">Create</button>
+                or <a href="/">cancel</a>
+            </fieldset>
+        </form>
+    </div>
 {% endblock %}

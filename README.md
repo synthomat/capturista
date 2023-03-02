@@ -17,6 +17,7 @@ Python 3
 * Configuration is very limited and the interval time is pre-defined (every 10min) right now.
 * Secrets are not protected (Kibana, Tableau)
 * Fail state reporting doesn't work in the UI yet.
+* Only sequential captures
 
 ## Installation
 Create and activate virtual environment
