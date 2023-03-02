@@ -1,13 +1,32 @@
 <html>
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
-          integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="/static/pure-min.css"/>
     <link rel="stylesheet" href="/static/app.css"/>
-    <script src="https://unpkg.com/htmx.org@1.8.5"></script>
+    <script src="/static/htmx.min.js"></script>
     <script src="/static/app.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 </head>
 
+
 <body>
-{% block page %}{% endblock %}
+
+<div class="pure-menu pure-menu-horizontal">
+    <h4 class="brand pure-menu-heading">Capturista!</h4>
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item">
+            <a href="/" class="pure-menu-link">Overview</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="#" class="pure-menu-link">Settings</a>
+        </li>
+    </ul>
+</div>
+
+<div class="container pure-g">
+    {% block page %}{% endblock %}
+</div>
+
 </body>
 </html>

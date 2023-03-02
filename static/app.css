@@ -1,8 +1,44 @@
 body {
-    padding: 20px;
+    /*    padding: 10px;*/
 }
 
 .danger-button {
     background: rgb(202, 60, 60);
     color: white;
+}
+
+.button-success {
+    background: rgb(28, 184, 65);
+    color: white;
+}
+
+.button-xsmall {
+    font-size: 70%;
+}
+
+.button-small {
+    font-size: 85%;
+}
+
+.pure-menu-item {
+    height: auto;
+}
+
+div.container {
+    padding: 20px;
+}
+
+.brand {
+    background: rgb(27, 22, 115);
+    background: linear-gradient(25deg, rgba(27, 22, 115, 1) 0%, rgba(40, 40, 166, 1) 35%, rgba(0, 212, 255, 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+img.preview {
+    max-width: 200px
+}
+table {
+    width: 100%;
 }
