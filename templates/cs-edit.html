@@ -28,7 +28,7 @@
                 or <a href="/">cancel</a>
                 <hr>
                 <div style="margin-top: 100px">
-                    <a href="" hx-delete="/api/sources/{{ cs.id }}" class="pure-button danger-button">Delete</a>
+                    <a href="" hx-confirm="Are you sure?" hx-delete="/api/sources/{{ cs.id }}" class="pure-button danger-button">Delete</a>
                 </div>
             </fieldset>
         </form>

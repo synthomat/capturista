@@ -66,6 +66,7 @@ LOADER_TYPES = {
 
 
 class Scheduler(threading.Thread):
+    """"""
     def run(self):
         capture_configs = db.table('capture_configs')
 
@@ -102,7 +103,7 @@ class Consumer(threading.Thread):
 
             try:
                 loader = loader_cls(manager, task)
-                loader.handle()
+                loader.run()
             except Exception as e:
                 logging.error(e)
 

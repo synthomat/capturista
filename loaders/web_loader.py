@@ -1,25 +1,10 @@
-import logging
-import sys
-
-from playwright.sync_api import sync_playwright
-from .loader import AbstractLoader
-from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime
+from .loader import PlaywrightLoader
 
 
-class WebLoader(AbstractLoader):
+class WebLoader(PlaywrightLoader):
     uid = "6d0115ae-765b-4cbb-b387-02a0391a732b"
 
-    def run(self, playwright):
-        chromium = playwright.chromium  # or "firefox" or "webkit".
-        self.update_status("opening browser")
-        browser = chromium.launch()
-
-        context = browser.new_context(
-            viewport={'width': 2560, 'height': 1440},
-            device_scale_factor=2
-        )
-
+    def handle(self, context):
         page = context.new_page()
         self.update_status("navigating to URL")
         page.goto(self.task.params['url'])
@@ -30,12 +15,3 @@ class WebLoader(AbstractLoader):
         self.update_status("capturing screen")
         buffer = page.screenshot()
         self.manager.on_capture_result(self.task, buffer)
-
-        # other actions...
-        browser.close()
-
-        self.update_status("done")
-
-    def handle(self):
-        with sync_playwright() as playwright:
-            self.run(playwright)
