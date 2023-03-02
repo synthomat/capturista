@@ -1,6 +1,7 @@
 import logging
 import os
 import threading
+import time
 import uuid
 from datetime import datetime
 from queue import Queue
@@ -9,8 +10,8 @@ from flask import Flask, request, render_template, redirect, make_response
 from tinydb import TinyDB, Query
 
 from loaders.kibana_loader import KibanaLoader
-from loaders.web_loader import WebLoader
 from loaders.tableau_loader import TableauLoader
+from loaders.web_loader import WebLoader
 
 app = Flask(__name__)
 
@@ -44,8 +45,6 @@ LOADER_TYPES = {
     "kibana": KibanaLoader,
     "tableau": TableauLoader
 }
-
-import time
 
 
 class Scheduler(threading.Thread):
