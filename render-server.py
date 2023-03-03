@@ -67,11 +67,12 @@ LOADER_TYPES = {
 
 class Scheduler(threading.Thread):
     """"""
+
     def run(self):
         capture_configs = db.table('capture_configs')
 
         while True:
-            sources = capture_configs.all()
+            sources = capture_configs.search(Query().autoload == True)
 
             for config in sources:
                 task = CaptureTask(
@@ -202,6 +203,7 @@ def cs_edit(id):
             params=dict(
                 url=f.get('url')
             ),
+            autoload=f.get('autoload') is not None,
             capture_type=f.get('capture_type'),
             slot_params=dynamic_slots(f)
         )

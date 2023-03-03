@@ -19,7 +19,7 @@
             {% for cs in capture_configs: %}
                 <tr data-cid="{{ cs.id }}">
                     <td><a href="/sources/{{ cs.id }}/edit">{{ cs.name }}</a></td>
-                    <td>{{ cs.capture_type }}</td>
+                    <td>{{ cs.capture_type }} {{ "(disabled)" if not cs.autoload }}</td>
                     <td class="last-run">{{ cs.last_run or 'never' }}</td>
                     <td class="status">{{ cs.status or 'unknown' }}</td>
                     <td>
