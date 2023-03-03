@@ -5,6 +5,8 @@
         <h1>Edit {{ cs.name }}</h1>
         <form class="pure-form pure-form-stacked" action="" method="post">
             <fieldset>
+                <label for="enabled">Autoload</label>
+                <input id="enabled" type="checkbox" name="autoload" {{ "checked" if cs.autoload }} />
                 <label for="stacked-name">Name</label>
                 <input type="text" id="stacked-name" name="name" class="pure-input-1" value="{{ cs.name }}"/>
 
@@ -19,7 +21,9 @@
                     {% endfor %}
                 </select>
 
+
                 <h2>Parameter Slots</h2>
+
                 <div id="slots">
                     {% include 'slots.html' %}
                 </div>
