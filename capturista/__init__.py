@@ -12,6 +12,7 @@ from tinydb import TinyDB, Query
 from capturista.loaders.kibana_loader import KibanaLoader
 from capturista.loaders.tableau_loader import TableauLoader
 from capturista.loaders.web_loader import WebLoader
+from PIL import Image
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -41,8 +42,14 @@ class Manager:
         logger.info(f"{task.config_id}: {status}")
 
     def on_capture_result(self, task: CaptureTask, buffer):
-        with open(f"static/screencaptures/{task.config_id}.png", 'wb') as f:
+        img_path = f"capturista/static/screencaptures/{task.config_id}.png"
+        with open(img_path, 'wb') as f:
             f.write(buffer)
+
+        img = Image.open(img_path)
+        img.thumbnail((300, 300))
+        img.save(f"capturista/static/screencaptures/{task.config_id}.thumb.png")
+
         capture_configs = db.table('capture_configs')
         capture_configs.update(dict(last_run=datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
                                Query().id == task.config_id)
@@ -121,7 +128,7 @@ def create_app() -> Flask:
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         Consumer().start()
-        # Scheduler().start()
+        Scheduler().start()
 
     @app.route("/")
     def overview():
