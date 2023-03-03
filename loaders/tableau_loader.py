@@ -7,6 +7,15 @@ class TableauLoader(PlaywrightLoader):
         "password"
     ]
 
+    def step_close_popup(self, page):
+        self.update_status("waiting for a popup")
+
+        try:
+            page.click('button[data-tb-test-id="postlogin-footer-close-Button"]', timeout=2000)
+            self.update_status("closed popup successfully")
+        except:
+            self.update_status("no popup appeared")
+
     def handle(self, context):
         params = self.task.params
         slot_params = self.task.slot_params
@@ -24,13 +33,20 @@ class TableauLoader(PlaywrightLoader):
         page.locator('input[name="password"]').fill(slot_params.get('password'))
         page.click('button[id="login-submit"]')
 
-        # wait for page reaction
-        page.wait_for_timeout(3000)
+        try:
+            self.update_status("waiting for network to calm down")
+            page.wait_for_load_state('networkidle', timeout=8000)
+        except:
+            self.update_status("network doesn't calm down – trying to continue")
 
-        # after successful login we wait again for the page to build up fully
-        page.wait_for_timeout(6000)
         self.update_status("logged in successfully")
+
+        self.step_close_popup(page)
+
+        page.wait_for_timeout(1000)
 
         self.update_status("capturing screen")
         buffer = page.screenshot()
         self.manager.on_capture_result(self.task, buffer)
+
+
