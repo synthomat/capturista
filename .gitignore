@@ -1,5 +1,5 @@
 /db.json
 *.pyc
-static/screencaptures/*.png
+capturista/static/screencaptures/*.png
 .idea
 venv
