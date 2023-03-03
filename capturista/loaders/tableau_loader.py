@@ -1,4 +1,4 @@
-from loaders.loader import PlaywrightLoader
+from capturista.loaders.loader import PlaywrightLoader
 
 
 class TableauLoader(PlaywrightLoader):
@@ -43,7 +43,7 @@ class TableauLoader(PlaywrightLoader):
 
         self.step_close_popup(page)
 
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(3000)
 
         self.update_status("capturing screen")
         buffer = page.screenshot()

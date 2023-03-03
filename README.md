@@ -11,7 +11,7 @@ Python 3
 ### Stack
 * **Python 3** and **Flask**
 * **Playwright** for screenshots
-* **Pillow** for post processing images
+* **Pillow** for post-processing images
 
 ### What's missing
 * Configuration is very limited and the interval time is pre-defined (every 10min) right now.

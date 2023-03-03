@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from loaders.loader import PlaywrightLoader
+from capturista.loaders.loader import PlaywrightLoader
 
 
 class KibanaLoader(PlaywrightLoader):
