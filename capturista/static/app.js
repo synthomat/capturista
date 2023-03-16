@@ -1,16 +1,30 @@
-window.addEventListener("load", (e) => {
-    setInterval(() => {
-        fetch("/api/states")
-            .then(r => r.json())
-            .then(j => {
-                document.getElementById("queue-size").textContent = j.queue_length
+function triggerData() {
+    fetch("/api/states")
+        .then(r => r.json())
+        .then(j => {
+            document.getElementById("queue-size").textContent = j.queue_length
 
-                let instances = j.instances
-
-                instances.forEach(cfg => {
-                    document.querySelector('tr[data-cid="' + cfg.id + '"] .status').textContent = cfg.status
-                    document.querySelector('tr[data-cid="' + cfg.id + '"] .last-run').textContent = cfg.last_run
-                })
+            Alpine.store('sources').setData(j.instances).then(() => {
+                // htmx.process(document.body)
             })
-    }, 2000);
+        })
+}
+
+
+document.addEventListener('alpine:init', () => {
+    Alpine.store('sources', {
+        data: [],
+
+        setData(d) {
+            this.data = d
+            return new Promise(resolve => resolve(d))
+        }
+    })
+
+    setInterval(triggerData, 2000);
+    triggerData()
 })
+
+window.addEventListener("load", (e) => {
+})
+

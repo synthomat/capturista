@@ -12,6 +12,7 @@ Python 3
 * **Python 3** and **Flask**
 * **Playwright** for screenshots
 * **Pillow** for post-processing images
+* **AlpineJS** and **HTMX** for UI
 
 ### What's missing
 * Configuration is very limited and the interval time is pre-defined (every 10min) right now.
@@ -23,7 +24,7 @@ Python 3
 Create and activate virtual environment
 
     $ python3 -m venv venv
-    $ . venv/bin/source
+    $ . venv/bin/activate
 
 Install dependencies and Playwright browsers (this might take a while!)
 

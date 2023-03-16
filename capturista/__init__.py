@@ -6,15 +6,17 @@ import uuid
 from datetime import datetime
 from queue import Queue
 
+from PIL import Image
 from flask import Flask, request, render_template, redirect, make_response
 from tinydb import TinyDB, Query
 
 from capturista.loaders.kibana_loader import KibanaLoader
 from capturista.loaders.tableau_loader import TableauLoader
 from capturista.loaders.web_loader import WebLoader
-from PIL import Image
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.getLogger("werkzeug").setLevel(logging.WARN)
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -46,9 +48,9 @@ class Manager:
         with open(img_path, 'wb') as f:
             f.write(buffer)
 
-        img = Image.open(img_path)
-        img.thumbnail((300, 300))
-        img.save(f"capturista/static/screencaptures/{task.config_id}.thumb.png")
+        with Image.open(img_path) as img:
+            img.thumbnail((300, 300))
+            img.save(f"capturista/static/screencaptures/{task.config_id}.thumb.png")
 
         capture_configs = db.table('capture_configs')
         capture_configs.update(dict(last_run=datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
@@ -80,8 +82,11 @@ LOADER_TYPES = {
 
 class Scheduler(threading.Thread):
     """"""
+    def __init__(self):
+        super().__init__(daemon=True)
 
     def run(self):
+        logging.info("Task Scheduler started")
         capture_configs = db.table('capture_configs')
 
         while True:
@@ -95,17 +100,21 @@ class Scheduler(threading.Thread):
                     slot_params=config.get('slot_params')
                 )
 
-                TASK_QUEUE.put(task)
+                #TASK_QUEUE.put(task)
 
             time.sleep(60 * 10)
+
+        logging.info("Task Scheduler stopped")
 
 
 class Consumer(threading.Thread):
     def __init__(self):
-        super().__init__()
+        super().__init__(daemon=True)
         self._stop_event = threading.Event()
 
     def run(self):
+        logging.info("Task Consumer started")
+
         while not self._stop_event.is_set():
             task = TASK_QUEUE.get()
             capture_type = task.capture_type
@@ -121,14 +130,16 @@ class Consumer(threading.Thread):
             except Exception as e:
                 logging.error(e)
 
+        logging.info("Task Consumer stopped")
+
 
 def create_app() -> Flask:
     app = Flask(__name__)
     # app.config.from_pyfile(config_filename)
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        Consumer().start()
         Scheduler().start()
+        Consumer().start()
 
     @app.route("/")
     def overview():
@@ -158,6 +169,9 @@ def create_app() -> Flask:
 
         for a in all:
             del a['params']
+            a['thumbnail_url'] = f"/static/screencaptures/{a.get('id')}.thumb.png",
+            a['image_url'] = f"/static/screencaptures/{a.get('id')}.png"
+
         state = dict(
             instances=all,
             queue_length=TASK_QUEUE.qsize()
@@ -253,7 +267,6 @@ def create_app() -> Flask:
 
 def main():
     capture_configs = db.table('capture_configs')
-    # capture_configs.insert(dict(id=str(uuid.uuid4()), name="Hacker News", capture_type='web', params=dict(url="https://news.ycombinator.com/")))
     print(capture_configs.all())
 
     app = create_app()

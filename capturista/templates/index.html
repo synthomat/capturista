@@ -1,8 +1,8 @@
 {% extends "_base.html" %}
 
 {% block page %}
-    <div class="pure-u-4-5">
 
+    <div class="pure-u-4-5" x-data="$store.sources">
         <p><a class="pure-button pure-button-primary" href="/sources/new">Create New</a></p>
         <table class="pure-table pure-table-bordered">
             <thead>
@@ -16,26 +16,22 @@
             </tr>
             </thead>
             <tbody>
-            {% for cs in capture_configs: %}
-                <tr data-cid="{{ cs.id }}">
-                    <td><a href="/sources/{{ cs.id }}/edit">{{ cs.name }}</a></td>
-                    <td>{{ cs.capture_type }} {{ "(disabled)" if not cs.autoload }}</td>
-                    <td class="last-run">{{ cs.last_run or 'never' }}</td>
-                    <td class="status">{{ cs.status or 'unknown' }}</td>
+            <template x-for="s in data">
+                <tr>
+                    <td><a :href="'/sources/' + s.id + '/edit'" x-text="s.name"></a></td>
+                    <td x-text="s.capture_type"></td>
+                    <td x-text="s.last_run"></td>
+                    <td x-text="s.autoload ? s.status : 'disabled'"></td>
+                    <td><a :href="s.image_url"><img :src="s.thumbnail_url" class="preview" alt=""></a></td>
                     <td>
-                        <a href="/static/screencaptures/{{ cs.id }}.png" target="_blank">
-                            <img src="/static/screencaptures/{{ cs.id }}.thumb.png" class="preview" alt="">
-                        </a>
-                    </td>
-                    <td>
-                        <button class="button-small button-success pure-button" hx-swap="none"
-                                hx-put="/api/sources/{{ cs.id }}/trigger">Run
+                        <button class="button-small button-success pure-button"
+                                @click="fetch('/api/sources/' + s.id + '/trigger', {method: 'put'})">Run
                         </button>
                     </td>
                 </tr>
-            {% endfor %}
+            </template>
             </tbody>
         </table>
-    <p>Tasks waiting: <span id="queue-size">–</span></p>
+        <p>Tasks waiting: <span id="queue-size">–</span></p>
     </div>
 {% endblock %}

@@ -37,8 +37,9 @@ div.container {
 
 
 img.preview {
-    max-width: 200px
+    max-width: 200px;
 }
+
 table {
     width: 100%;
 }

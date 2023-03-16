@@ -11,7 +11,7 @@ class TableauLoader(PlaywrightLoader):
         self.update_status("waiting for a popup")
 
         try:
-            page.click('button[data-tb-test-id="postlogin-footer-close-Button"]', timeout=2000)
+            page.click('button[data-tb-test-id="postlogin-footer-close-Button"]', timeout=5000)
             self.update_status("closed popup successfully")
         except:
             self.update_status("no popup appeared")
