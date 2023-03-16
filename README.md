@@ -34,4 +34,14 @@ Install dependencies and Playwright browsers (this might take a while!)
 ## Run
     $ honcho start
 
+## Docker
+
+Build image
+
+    $ docker build -t capturista .
+
+Run image
+
+    $ docker run -p 8000:8000 capturista:latest 
+
 The tool is accessible at http://localhost:5000

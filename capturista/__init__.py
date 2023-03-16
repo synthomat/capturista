@@ -82,6 +82,7 @@ LOADER_TYPES = {
 
 class Scheduler(threading.Thread):
     """"""
+
     def __init__(self):
         super().__init__(daemon=True)
 
@@ -100,7 +101,7 @@ class Scheduler(threading.Thread):
                     slot_params=config.get('slot_params')
                 )
 
-                #TASK_QUEUE.put(task)
+                TASK_QUEUE.put(task)
 
             time.sleep(60 * 10)
 
@@ -270,7 +271,10 @@ def main():
     print(capture_configs.all())
 
     app = create_app()
-    app.run()
+    app.run(
+        host=os.getenv("BIND", "0.0.0.0"),
+        port=os.getenv('PORT', 5000)
+    )
 
 
 if __name__ == '__main__':
