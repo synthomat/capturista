@@ -23,6 +23,15 @@ logger.setLevel(logging.INFO)
 db = TinyDB('db.json')
 
 TASK_QUEUE = Queue()
+from flask_wtf import FlaskForm
+from flask_wtf.csrf import CSRFProtect
+from wtforms import StringField, validators, URLField, SelectField
+
+
+class CreateSourceForm(FlaskForm):
+    name = StringField('Name', [validators.Length(min=3)])
+    target_url = URLField('Target URL', [validators.Length(min=10)])
+    loader_type = SelectField('Loader Type', choices=[])
 
 
 class CaptureTask:
@@ -134,8 +143,14 @@ class Consumer(threading.Thread):
         logging.info("Task Consumer stopped")
 
 
+csrf = CSRFProtect()
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = "6592f711-2247-454a"
+
+    csrf.init_app(app)
     # app.config.from_pyfile(config_filename)
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
@@ -247,21 +262,24 @@ def create_app() -> Flask:
     def cs_new():
         types = sorted(LOADER_TYPES.keys())
 
-        if request.method == "POST":
-            f = request.form
+        form = CreateSourceForm()
+        form.loader_type.choices = [(t, t.capitalize()) for t in types]
+
+        if form.validate_on_submit():
             new = dict(
                 id=str(uuid.uuid4()),
-                name=f.get('name'),
+                name=form.name.data,
                 params=dict(
-                    url=f.get('url')
+                    url=form.target_url.data
                 ),
-                capture_type=f.get('capture_type')
+                capture_type=form.loader_type.data
             )
             capture_configs = db.table('capture_configs')
             capture_configs.insert(new)
+
             return redirect("/")
 
-        return render_template("cs-new.html", capture_types=types)
+        return render_template("cs-new.html", form=form)
 
     return app
 

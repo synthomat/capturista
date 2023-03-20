@@ -1,3 +1,10 @@
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener('htmx:configRequest', function (evt) {
+        evt.detail.headers['X-CSRFToken'] = csrf_token;
+    })
+})
+
+
 function triggerData() {
     fetch("/api/states")
         .then(r => r.json())
@@ -20,11 +27,13 @@ document.addEventListener('alpine:init', () => {
             return new Promise(resolve => resolve(d))
         }
     })
-
-    setInterval(triggerData, 2000);
-    triggerData()
 })
 
-window.addEventListener("load", (e) => {
-})
+function startWatch() {
+    window.addEventListener("load", (e) => {
+        setInterval(triggerData, 2000);
+        triggerData()
+    })
+}
+
 

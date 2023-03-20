@@ -56,3 +56,21 @@ a.pure-button {
 .pure-menu a {
     color: #666;
 }
+
+.input-group {
+    margin-bottom: 16px;
+}
+
+.pure-form-message.error {
+    color: #cc0033;
+}
+
+.error label {
+    color: #cc0033;
+}
+
+.error input {
+    background-color: #fce4e4;
+    border: 1px solid #cc0033;
+    outline: none;
+}
