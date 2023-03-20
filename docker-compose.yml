@@ -2,7 +2,7 @@ version: "3.9"
 services:
   app:
     build: .
-    # image: "docker.nnthq.com/dashboards/capturista:0.1"
+    # image: "docker.nnthq.com/dashboards/capturista:0.2"
     volumes:
       - "staticfiles-volume:/app/capturista/static"
       - "$PWD/db.json:/app/db.json"
@@ -16,6 +16,9 @@ services:
     volumes:
       - "$PWD/Caddyfile:/etc/caddy/Caddyfile"
       - "staticfiles-volume:/app/capturista/static"
+      - "caddy_data:/data"
 
 volumes:
   staticfiles-volume:
+  caddy_data:
+    external: true

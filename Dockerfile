@@ -7,8 +7,8 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 # Following dependencies will run inside the container
-# RUN playwright install chromium
-# RUN playwright install-deps
+RUN playwright install chromium
+RUN playwright install-deps
 
 COPY . .
 

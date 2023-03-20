@@ -6,7 +6,7 @@ It can be used to capture protected websites. Under the hood it uses the [Playwr
 New capture types can be easily integrated by extending the `AbstractLoader` class
 
 ### Requirements
-Python 3
+* Python 3
 
 ### Stack
 * **Python 3** and **Flask**
@@ -19,6 +19,7 @@ Python 3
 * Secrets are not protected (Kibana, Tableau)
 * Fail state reporting doesn't work in the UI yet.
 * Only sequential captures
+* TinyDB sometimes corrupts the database (writes database twice) ¯\\\_(ツ)\_/¯
 
 ## Installation
 Create and activate virtual environment
@@ -42,12 +43,15 @@ Install dependencies and Playwright browsers (this might take a while!)
 
 **Run image**
 
+    $ touch db.json
     $ docker run -p 8000:8000 -v ${PWD}/db.json:/app/db.json capturista:latest
 
 The tool is accessible at http://localhost:8000
 
 **Or Docker Compose**
 
+    $ touch db.json
+    $ docker volume create caddy_data
     $ docker-compose up -d
 
 The tool is accessible at http://localhost
