@@ -5,9 +5,12 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
-RUN playwright install chromium
+
+# Following dependencies will run inside the container
+# RUN playwright install chromium
+# RUN playwright install-deps
 
 COPY . .
 
 EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0", "capturista:create_app()"]
+CMD ["./entrypoint.sh"]

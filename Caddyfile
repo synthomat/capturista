@@ -1,0 +1,11 @@
+# Put in your domain here
+localhost:80
+
+handle {
+    reverse_proxy app:8000
+}
+
+handle /static/* {
+    root * /app/capturista
+    file_server
+}

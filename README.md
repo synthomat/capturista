@@ -36,12 +36,18 @@ Install dependencies and Playwright browsers (this might take a while!)
 
 ## Docker
 
-Build image
+**Build image**
 
     $ docker build -t capturista .
 
-Run image
+**Run image**
 
-    $ docker run -p 8000:8000 capturista:latest 
+    $ docker run -p 8000:8000 -v ${PWD}/db.json:/app/db.json capturista:latest
 
-The tool is accessible at http://localhost:5000
+The tool is accessible at http://localhost:8000
+
+**Or Docker Compose**
+
+    $ docker-compose up -d
+
+The tool is accessible at http://localhost

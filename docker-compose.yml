@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    # image: "docker.nnthq.com/dashboards/capturista:0.1"
+    volumes:
+      - "staticfiles-volume:/app/capturista/static"
+      - "$PWD/db.json:/app/db.json"
+  web:
+    image: "caddy:alpine"
+    links:
+      - "app"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "$PWD/Caddyfile:/etc/caddy/Caddyfile"
+      - "staticfiles-volume:/app/capturista/static"
+
+volumes:
+  staticfiles-volume:
