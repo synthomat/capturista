@@ -7,9 +7,6 @@
         <form class="pure-form pure-form-stacked" action="" method="post">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <fieldset>
-                <label for="enabled">Autoload</label>
-                <input id="enabled" type="checkbox" name="autoload" {{ "checked" if cs.autoload }} />
-
                 <p><b>Capture Type</b>: {{ cs.capture_type }}</p>
 
                 {% for field in form %}

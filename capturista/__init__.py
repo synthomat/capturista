@@ -7,12 +7,11 @@ from datetime import datetime
 from queue import Queue
 
 from PIL import Image
-from flask import Flask, request, render_template, redirect, make_response
+from flask import Flask, render_template, redirect, make_response
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from tinydb import TinyDB, Query
-from wtforms import StringField, validators, URLField, SelectField, FieldList, FormField, PasswordField
-from wtforms.widgets import TextInput
+from wtforms import StringField, validators, URLField, SelectField, FormField, BooleanField
 
 from capturista.loaders.kibana_loader import KibanaLoader
 from capturista.loaders.tableau_loader import TableauLoader
@@ -29,20 +28,14 @@ db = TinyDB('db.json')
 TASK_QUEUE = Queue()
 
 
-class CreateSourceForm(FlaskForm):
+class BaseSourceForm(FlaskForm):
     name = StringField('Name', [validators.Length(min=3)])
     target_url = URLField('Target URL', [validators.Length(min=10)])
+    autoload = BooleanField('Auto Load', default=True)
+
+
+class CreateSourceForm(BaseSourceForm):
     loader_type = SelectField('Loader Type', choices=[])
-
-
-class SlotForm(FlaskForm):
-    name = StringField()
-    value = StringField()
-
-
-class EditSourceForm(CreateSourceForm):
-    pass
-
 
 class CaptureTask:
     def __init__(self, config_id, capture_type: str, params=None, slot_params=None):
@@ -176,9 +169,8 @@ def create_app() -> Flask:
     # app.config.from_pyfile(config_filename)
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        # Scheduler().start()
-        # Consumer().start()
-        pass
+        Scheduler().start()
+        Consumer().start()
 
     @app.route("/")
     def overview():
@@ -260,7 +252,7 @@ def create_app() -> Flask:
         for slot in t.input_slots:
             setattr(SlotForm, slot, StringField())
 
-        class F(EditSourceForm):
+        class F(BaseSourceForm):
             slots = FormField(SlotForm)
 
         slot_params = cs.get('slot_params').copy()
@@ -270,12 +262,12 @@ def create_app() -> Flask:
 
         form = F(data=dict(
             name=cs.get('name'),
+            autoload=cs.get('autoload'),
             target_url=cs.get('params').get('url'),
             slots=slot_params))
 
-        del form.loader_type
-
         if form.validate_on_submit():
+            f = form.data
             slot_data = form.slots.data
             del slot_data['csrf_token']
 
@@ -285,11 +277,11 @@ def create_app() -> Flask:
                     slot_data['password'] = cs.get('slot_params').get('password')
 
             new = dict(
-                name=form.get('name'),
+                name=f.get('name'),
                 params=dict(
-                    url=form.get('target_url')
+                    url=f.get('target_url')
                 ),
-                autoload=form.get('autoload') is not None,
+                autoload=f.get('autoload'),
                 capture_type=cs.get('capture_type'),
                 slot_params=slot_data
             )
