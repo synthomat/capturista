@@ -8,7 +8,11 @@ from queue import Queue
 
 from PIL import Image
 from flask import Flask, request, render_template, redirect, make_response
+from flask_wtf import FlaskForm
+from flask_wtf.csrf import CSRFProtect
 from tinydb import TinyDB, Query
+from wtforms import StringField, validators, URLField, SelectField, FieldList, FormField, Field
+from wtforms.widgets import TextInput
 
 from capturista.loaders.kibana_loader import KibanaLoader
 from capturista.loaders.tableau_loader import TableauLoader
@@ -23,15 +27,21 @@ logger.setLevel(logging.INFO)
 db = TinyDB('db.json')
 
 TASK_QUEUE = Queue()
-from flask_wtf import FlaskForm
-from flask_wtf.csrf import CSRFProtect
-from wtforms import StringField, validators, URLField, SelectField
 
 
 class CreateSourceForm(FlaskForm):
     name = StringField('Name', [validators.Length(min=3)])
     target_url = URLField('Target URL', [validators.Length(min=10)])
     loader_type = SelectField('Loader Type', choices=[])
+
+
+class SlotForm(FlaskForm):
+    name = StringField()
+    value = StringField()
+
+
+class EditSourceForm(CreateSourceForm):
+    pass
 
 
 class CaptureTask:
@@ -146,6 +156,18 @@ class Consumer(threading.Thread):
 csrf = CSRFProtect()
 
 
+def dynamic_slots(form):
+    slot_fields = filter(lambda k: k.startswith('slot_'), form.keys())
+
+    slot_params = {}
+
+    for slot_name in slot_fields:
+        _, _, name = slot_name.partition('_')
+        slot_params[name] = form[slot_name]
+
+    return slot_params
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config['SECRET_KEY'] = "6592f711-2247-454a"
@@ -154,8 +176,9 @@ def create_app() -> Flask:
     # app.config.from_pyfile(config_filename)
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        Scheduler().start()
-        Consumer().start()
+        # Scheduler().start()
+        # Consumer().start()
+        pass
 
     @app.route("/")
     def overview():
@@ -209,55 +232,6 @@ def create_app() -> Flask:
 
         return render_template("slots.html", slots=slots)
 
-    def dynamic_slots(form):
-        slot_fields = filter(lambda k: k.startswith('slot_'), form.keys())
-
-        slot_params = {}
-
-        for slot_name in slot_fields:
-            _, _, name = slot_name.partition('_')
-            slot_params[name] = form[slot_name]
-
-        return slot_params
-
-    @app.route("/sources/<id>/edit", methods=["get", "post"])
-    def cs_edit(id):
-        capture_configs = db.table('capture_configs')
-        cs = capture_configs.get(Query().id == id)
-
-        types = sorted(LOADER_TYPES.keys())
-
-        if request.method == "POST":
-            f = request.form
-
-            new = dict(
-                name=f.get('name'),
-                params=dict(
-                    url=f.get('url')
-                ),
-                autoload=f.get('autoload') is not None,
-                capture_type=f.get('capture_type'),
-                slot_params=dynamic_slots(f)
-            )
-
-            capture_configs.update(new, Query().id == id)
-            return redirect("/")
-
-        cls = LOADER_TYPES.get(cs.get('capture_type'))
-        slots = cls.input_slots
-        return render_template("cs-edit.html", cs=cs, capture_types=types, slots=slots)
-
-    @app.delete("/api/sources/<id>")
-    def cs_delete(id):
-        capture_configs = db.table('capture_configs')
-        capture_configs.remove(Query().id == id)
-
-        response = make_response({}, 204)
-
-        response.headers['HX-Redirect'] = '/'
-
-        return response
-
     @app.route("/sources/new", methods=["get", "post"])
     def cs_new():
         types = sorted(LOADER_TYPES.keys())
@@ -280,6 +254,61 @@ def create_app() -> Flask:
             return redirect("/")
 
         return render_template("cs-new.html", form=form)
+
+    @app.route("/sources/<id>/edit", methods=["get", "post"])
+    def cs_edit(id):
+        capture_configs = db.table('capture_configs')
+        cs = capture_configs.get(Query().id == id)
+
+        class SlotForm(FlaskForm):
+            pass
+
+        t = LOADER_TYPES.get(cs.get("capture_type"))
+
+        for slot in t.input_slots:
+            setattr(SlotForm, slot, StringField())
+
+        class F(EditSourceForm):
+            slots = FormField(SlotForm)
+
+        form = F(data=dict(
+            name=cs.get('name'),
+            target_url=cs.get('params').get('url'),
+            slots=cs.get('slot_params')))
+
+        del form.loader_type
+
+        if form.validate_on_submit():
+            f = request.form
+
+            slot_data = form.slots.data
+            del slot_data['csrf_token']
+
+            new = dict(
+                name=f.get('name'),
+                params=dict(
+                    url=f.get('target_url')
+                ),
+                autoload=f.get('autoload') is not None,
+                capture_type=cs.get('capture_type'),
+                slot_params=slot_data
+            )
+
+            capture_configs.update(new, Query().id == id)
+            return redirect("/")
+
+        return render_template("cs-edit.html", cs=cs, form=form)
+
+    @app.delete("/api/sources/<id>")
+    def cs_delete(id):
+        capture_configs = db.table('capture_configs')
+        capture_configs.remove(Query().id == id)
+
+        response = make_response({}, 204)
+
+        response.headers['HX-Redirect'] = '/'
+
+        return response
 
     return app
 

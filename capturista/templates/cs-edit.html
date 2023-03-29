@@ -3,37 +3,36 @@
 {% block page %}
     <div class="pure-u-4-5">
         <h1>Edit {{ cs.name }}</h1>
+
         <form class="pure-form pure-form-stacked" action="" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <fieldset>
                 <label for="enabled">Autoload</label>
                 <input id="enabled" type="checkbox" name="autoload" {{ "checked" if cs.autoload }} />
-                <label for="stacked-name">Name</label>
-                <input type="text" id="stacked-name" name="name" class="pure-input-1" value="{{ cs.name }}"/>
 
-                <label for="stacked-url">Page URL</label>
-                <input type="text" id="stacked-url" class="pure-input-1" name="url" value="{{ cs.params.url }}"/>
+                <p><b>Capture Type</b>: {{ cs.capture_type }}</p>
 
-                <label for="stacked-state">Capture Type</label>
+                {% for field in form %}
+                    <div class="input-group {{ 'error' if field.errors }}">
+                        {{ field.label if field.name != 'csrf_token' }}
+                        {{ field(class_="pure-input-1") }}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <span class="pure-form-message error">{{ error }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
 
-                <select id="stacked-state" name="capture_type" hx-get="/api/capture_types/slots" hx-target="#slots">
-                    {% for ct in capture_types %}
-                        <option {{ 'selected' if cs.capture_type == ct }}>{{ ct }}</option>
-                    {% endfor %}
-                </select>
-
-
-                <h2>Parameter Slots</h2>
-
-                <div id="slots">
-                    {% include 'slots.html' %}
-                </div>
-
-                <button type="submit" class="pure-button pure-button-primary">Save</button>
+                <button type="submit" class="pure-button pure-button-primary">Create</button>
                 or <a href="/">cancel</a>
+
                 <hr>
                 <div style="margin-top: 100px">
-                    <a href="" hx-confirm="Are you sure?" hx-delete="/api/sources/{{ cs.id }}" class="pure-button danger-button">Delete</a>
+                    <a href="" hx-confirm="Are you sure?" hx-delete="/api/sources/{{ cs.id }}"
+                       class="pure-button danger-button">Delete</a>
                 </div>
+
             </fieldset>
         </form>
     </div>

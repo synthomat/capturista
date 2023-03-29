@@ -24,7 +24,7 @@
                     <td><a :href="s.image_url"><img :src="s.thumbnail_url" class="preview" alt=""></a></td>
                     <td>
                         <button class="button-small button-success pure-button"
-                                @click="fetch('/api/sources/' + s.id + '/trigger', {method: 'put'})">Run
+                                @click="request('/api/sources/' + s.id + '/trigger', {method: 'put'})">Run
                         </button>
                     </td>
                 </tr>

@@ -4,9 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 })
 
+function request(url, options) {
+    return fetch(url, {
+            ...options,
+            headers: {
+                ...((options !== undefined) ? options.headers : {}),
+                'X-CSRFToken': csrf_token
+            }
+        }
+    )
+}
+
 
 function triggerData() {
-    fetch("/api/states")
+    request("/api/states")
         .then(r => r.json())
         .then(j => {
             document.getElementById("queue-size").textContent = j.queue_length
