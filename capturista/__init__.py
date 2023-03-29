@@ -11,7 +11,7 @@ from flask import Flask, request, render_template, redirect, make_response
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from tinydb import TinyDB, Query
-from wtforms import StringField, validators, URLField, SelectField, FieldList, FormField, Field
+from wtforms import StringField, validators, URLField, SelectField, FieldList, FormField, PasswordField
 from wtforms.widgets import TextInput
 
 from capturista.loaders.kibana_loader import KibanaLoader
@@ -224,14 +224,6 @@ def create_app() -> Flask:
 
         return types
 
-    @app.get("/api/capture_types/slots")
-    def capture_slots():
-        typ = request.args.get('capture_type')
-        cls = LOADER_TYPES.get(typ)
-        slots = cls.input_slots
-
-        return render_template("slots.html", slots=slots)
-
     @app.route("/sources/new", methods=["get", "post"])
     def cs_new():
         types = sorted(LOADER_TYPES.keys())
@@ -271,25 +263,33 @@ def create_app() -> Flask:
         class F(EditSourceForm):
             slots = FormField(SlotForm)
 
+        slot_params = cs.get('slot_params').copy()
+
+        if 'password' in slot_params:
+            slot_params['password'] = '****'
+
         form = F(data=dict(
             name=cs.get('name'),
             target_url=cs.get('params').get('url'),
-            slots=cs.get('slot_params')))
+            slots=slot_params))
 
         del form.loader_type
 
         if form.validate_on_submit():
-            f = request.form
-
             slot_data = form.slots.data
             del slot_data['csrf_token']
 
+            if 'password' in slot_data:
+                if slot_data['password'].strip() in ['', '****']:
+                    # recover original password
+                    slot_data['password'] = cs.get('slot_params').get('password')
+
             new = dict(
-                name=f.get('name'),
+                name=form.get('name'),
                 params=dict(
-                    url=f.get('target_url')
+                    url=form.get('target_url')
                 ),
-                autoload=f.get('autoload') is not None,
+                autoload=form.get('autoload') is not None,
                 capture_type=cs.get('capture_type'),
                 slot_params=slot_data
             )
