@@ -255,7 +255,7 @@ def create_app() -> Flask:
         class F(BaseSourceForm):
             slots = FormField(SlotForm)
 
-        slot_params = cs.get('slot_params').copy()
+        slot_params = cs.get('slot_params', {}).copy()
 
         if 'password' in slot_params:
             slot_params['password'] = '****'

@@ -42,9 +42,11 @@ class TableauLoader(PlaywrightLoader):
         self.update_status("logged in successfully")
 
         self.step_close_popup(page)
+        page.wait_for_timeout(1000)
+        frame_url = page.main_frame.child_frames[0].url
+        page.goto(frame_url)
 
-        page.wait_for_timeout(3000)
-
+        page.wait_for_timeout(2000)
         self.update_status("capturing screen")
         buffer = page.screenshot()
         self.manager.on_capture_result(self.task, buffer)

@@ -20,7 +20,7 @@ New capture types can be easily integrated by extending the `AbstractLoader` cla
 * Secrets are not protected (Kibana, Tableau)
 * Fail state reporting doesn't work in the UI yet.
 * Only sequential captures
-* TinyDB sometimes corrupts the database (writes database twice) ¯\\\_(ツ)\_/¯
+* TinyDB itself is not thread-safe. Our current implementation sometimes corrupts the database (writes database twice simultaneously) ¯\\\_(ツ)\_/¯
 
 ## Installation
 Create and activate virtual environment
