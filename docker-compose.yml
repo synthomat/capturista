@@ -2,7 +2,7 @@ version: "3.9"
 services:
   app:
     build: .
-    # image: "docker.nnthq.com/dashboards/capturista:0.2"
+    # image: "docker.nnthq.com/dashboards/capturista:0.4"
     volumes:
       - "staticfiles-volume:/app/capturista/static"
       - "$PWD/db.json:/app/db.json"

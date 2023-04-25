@@ -17,10 +17,11 @@
             <tbody>
             <template x-for="s in data">
                 <tr>
-                    <td><a :href="'/sources/' + s.id + '/edit'" x-text="s.name"></a></td>
+                    <td><a :href="'/sources/' + s.id + '/edit'" x-text="s.name ? s.name : 'untitled'"></a><br />
+                    <small style="color: gray;" x-text="!s.autoload ? '(disabled)' : '' "></small></td>
                     <td x-text="s.capture_type"></td>
                     <td x-text="s.last_run"></td>
-                    <td x-text="s.autoload ? s.status : 'disabled'"></td>
+                    <td x-text="s.status"></td>
                     <td><a :href="s.image_url"><img :src="s.thumbnail_url" class="preview" alt=""></a></td>
                     <td>
                         <button class="button-small button-success pure-button"
