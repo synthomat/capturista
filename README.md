@@ -56,3 +56,6 @@ The tool is accessible at http://localhost:8000
     $ docker-compose up -d
 
 The tool is accessible at http://localhost
+
+---
+*This tool uses the [`Source Sans 3`](https://github.com/adobe-fonts/source-sans) font by Adobe*

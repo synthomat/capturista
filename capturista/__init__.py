@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from queue import Queue
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from flask import Flask, render_template, redirect, make_response
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
@@ -61,6 +61,16 @@ class Manager:
             f.write(buffer)
 
         with Image.open(img_path) as img:
+            d = ImageDraw.Draw(img)
+            text = datetime.now().strftime("%Y-%m-%d %H:%M")
+            font = ImageFont.truetype("capturista/static/fonts/SourceSans3-Regular.ttf", 40)
+            text_x, text_y = (2560*2)-380, 50
+            text_width, text_height = font.getmask(text).size
+            d.rectangle(((text_x-15, text_y-5), (text_x + text_width+15, text_y + text_height+30)), fill=(230, 100, 100, 100))
+            d.text((text_x, text_y), text, font=font, fill=(70, 30, 30))
+
+            img.save(img_path)
+
             img.thumbnail((300, 300))
             img.save(f"capturista/static/screencaptures/{task.config_id}.thumb.png")
 
@@ -115,7 +125,7 @@ class Scheduler(threading.Thread):
 
                 TASK_QUEUE.put(task)
 
-            time.sleep(60 * 10)
+            time.sleep(60 * 30)
 
         logging.info("Task Scheduler stopped")
 
@@ -169,7 +179,7 @@ def create_app() -> Flask:
     # app.config.from_pyfile(config_filename)
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        Scheduler().start()
+        # Scheduler().start()
         Consumer().start()
 
     @app.route("/")
