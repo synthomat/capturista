@@ -179,7 +179,7 @@ def create_app() -> Flask:
     # app.config.from_pyfile(config_filename)
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        # Scheduler().start()
+        Scheduler().start()
         Consumer().start()
 
     @app.route("/")
