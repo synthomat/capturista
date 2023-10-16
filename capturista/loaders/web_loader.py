@@ -1,4 +1,4 @@
-from .loader import PlaywrightLoader
+from capturista.loaders.loader import PlaywrightLoader
 
 
 class WebLoader(PlaywrightLoader):

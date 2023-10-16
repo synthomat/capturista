@@ -1,7 +1,14 @@
 import threading
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 from playwright.sync_api import sync_playwright
+
+
+@dataclass(frozen=True)
+class Slot:
+    key: str
+    value: str
 
 
 class AbstractLoader(ABC):

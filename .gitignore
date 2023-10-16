@@ -4,3 +4,4 @@ capturista/static/screencaptures/*.png
 .idea
 venv/
 env/
+/instance/
