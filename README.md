@@ -10,7 +10,7 @@ New capture types can be easily integrated by extending the `AbstractLoader` cla
 
 ### Stack
 * **Python 3** and **Flask**
-* **TinyDB** as data storage
+* **Sqlite** as data base
 * **Playwright** for screenshots
 * **Pillow** for images post-processing 
 * **AlpineJS** and **HTMX** for UI

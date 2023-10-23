@@ -2,8 +2,8 @@ import uuid
 
 import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
+from sqlalchemy import ForeignKey, select, delete
+from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship, session
 
 
 class BaseModel(DeclarativeBase):
@@ -18,6 +18,7 @@ class BaseModel(DeclarativeBase):
 
 db = SQLAlchemy(model_class=BaseModel)
 
+
 class Endpoint(BaseModel):
     __tablename__ = "endpoints"
 
@@ -27,12 +28,29 @@ class Endpoint(BaseModel):
     data_source: Mapped["DataSource"] = relationship()
 
 
-class DataSource(db.Model):
+class DataSource(BaseModel):
     __tablename__ = "data_sources"
 
     name = mapped_column(sa.String(255), nullable=False)
 
-    loader_type = mapped_column(sa.String(50))
+    loader_id = mapped_column(sa.Uuid(), nullable=False)
     is_active = mapped_column(sa.Boolean(), default=False, nullable=False)
     target_url = mapped_column(sa.Text())
-    slots = mapped_column(sa.JSON())
+    custom_config = mapped_column(sa.JSON())
+
+
+class DataSourceRepository:
+    def __init__(self, sess: session.Session):
+        self.session = sess
+
+    def get_all(self) -> [DataSource]:
+        return self.session.scalars(select(DataSource)).all()
+
+    def get_by_id(self, _id: str) -> DataSource | None:
+        return self.session.scalar(select(DataSource).where(DataSource.id == uuid.UUID(_id)))
+
+    def delete_by_id(self, _id: str):
+        res = self.session.execute(delete(DataSource).where(DataSource.id == uuid.UUID(_id)))
+        self.session.commit()
+
+        return res.rowcount > 0

@@ -5,6 +5,8 @@ from capturista.loaders.loader import PlaywrightLoader
 
 
 class KibanaLoader(PlaywrightLoader):
+    uid = "e1a3ebb6-9aaf-4db7-91ff-0e41fd36e14b"
+    name = "kibana"
     input_slots = [
         "username",
         "password"

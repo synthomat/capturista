@@ -5,3 +5,4 @@ capturista/web/static/screencaptures/*.png
 venv/
 env/
 /instance/
+.DS_Store

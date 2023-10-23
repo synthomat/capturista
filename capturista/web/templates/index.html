@@ -15,6 +15,18 @@
             </tr>
             </thead>
             <tbody>
+            {% for s in sources %}
+                <tr>
+                    <td><a href="/sources/{{ s.id }}/edit">{{ s.name }}</a></td>
+                <td>{{ loader_names[s.loader_id|string] }}</td>
+                <td></td>
+                <td></td>
+                    <td></td>
+                <td><button class="button-small button-success pure-button"
+                                @click="request('/api/sources/{{ s.id }}/trigger', {method: 'put'})">Run
+                        </button></td>
+                </tr>
+            {% endfor %}
             <template x-for="s in data">
                 <tr>
                     <td><a :href="'/sources/' + s.id + '/edit'" x-text="s.name ? s.name : 'untitled'"></a><br />
@@ -32,7 +44,6 @@
             </template>
             </tbody>
         </table>
-        <p>Tasks waiting: <span id="queue-size">–</span></p>
     </div>
-    <script>startWatch();</script>
+    <!--<script>startWatch();</script>-->
 {% endblock %}

@@ -21,6 +21,20 @@
                     </div>
                 {% endfor %}
 
+                <h2>Params</h2>
+
+                {% for field in slots_form %}
+                    <div class="input-group {{ 'error' if field.errors }}">
+                        {{ field.label if field.name != 'p-csrf_token' }}
+                        {{ field(class_="pure-input-1") }}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <span class="pure-form-message error">{{ error }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
                 <button type="submit" class="pure-button pure-button-primary">Update</button>
                 or <a href="/">cancel</a>
 
