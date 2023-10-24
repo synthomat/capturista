@@ -57,7 +57,7 @@ class Manager:
         logger.info(f"{task.config_id}: {status}")
 
     def on_capture_result(self, task: CaptureTask, buffer):
-        img_path = f"capturista/static/screencaptures/{task.config_id}.png"
+        img_path = f"capturista/web/static/screencaptures/{task.config_id}.png"
         with open(img_path, 'wb') as f:
             f.write(buffer)
 

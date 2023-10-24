@@ -4,7 +4,7 @@ services:
     build: .
     # image: "docker.nnthq.com/dashboards/capturista:0.4"
     volumes:
-      - "staticfiles-volume:/app/capturista/static"
+      - "staticfiles-volume:/app/capturista/web/static"
       - "$PWD/db.json:/app/db.json"
   web:
     image: "caddy:alpine"
@@ -15,7 +15,7 @@ services:
       - "443:443"
     volumes:
       - "$PWD/Caddyfile:/etc/caddy/Caddyfile"
-      - "staticfiles-volume:/app/capturista/static"
+      - "staticfiles-volume:/app/capturista/web/static"
       - "caddy_data:/data"
 
 volumes:

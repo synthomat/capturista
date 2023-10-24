@@ -6,6 +6,6 @@ handle {
 }
 
 handle /static/* {
-    root * /app/capturista
+    root * /app/capturista/web
     file_server
 }
