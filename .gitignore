@@ -1,6 +1,6 @@
 /db.json
 *.pyc
-capturista/static/screencaptures/*.png
+capturista/web/static/screencaptures/*.png
 .idea
 venv/
 env/
