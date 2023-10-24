@@ -64,7 +64,7 @@ class Manager:
         with Image.open(img_path) as img:
             d = ImageDraw.Draw(img)
             text = datetime.now().strftime("%Y-%m-%d %H:%M")
-            font = ImageFont.truetype("capturista/static/fonts/SourceSans3-Regular.ttf", 40)
+            font = ImageFont.truetype("capturista/web/static/fonts/SourceSans3-Regular.ttf", 40)
             text_x, text_y = (2560*2)-380, 50
             text_width, text_height = font.getmask(text).size
             d.rectangle(((text_x-15, text_y-5), (text_x + text_width+15, text_y + text_height+30)), fill=(230, 100, 100, 100))
@@ -73,7 +73,7 @@ class Manager:
             img.save(img_path)
 
             img.thumbnail((300, 300))
-            img.save(f"capturista/static/screencaptures/{task.config_id}.thumb.png")
+            img.save(f"capturista/web/static/screencaptures/{task.config_id}.thumb.png")
 
         capture_configs = db.table('capture_configs')
         capture_configs.update(dict(last_run=datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
@@ -264,7 +264,7 @@ def create_app() -> Flask:
         for slot in t.input_slots:
             setattr(SlotForm, slot, StringField())
 
-        setattr(SlotForm, slot, StringField())
+#        setattr(SlotForm, slot, StringField())
 
         class F(BaseSourceForm):
             slots = FormField(SlotForm)
