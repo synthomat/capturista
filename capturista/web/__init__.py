@@ -16,6 +16,7 @@ from wtforms import StringField, validators, URLField, SelectField, FormField, B
 from capturista.loaders.kibana_loader import KibanaLoader
 from capturista.loaders.tableau_loader import TableauLoader
 from capturista.loaders.web_loader import WebLoader
+from capturista.loaders.aws_grafana_loader import AWSGrafanaLoader
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logging.getLogger("werkzeug").setLevel(logging.WARN)
@@ -37,16 +38,12 @@ class BaseSourceForm(FlaskForm):
 class CreateSourceForm(BaseSourceForm):
     loader_type = SelectField('Loader Type', choices=[])
 
-
 class CaptureTask:
     def __init__(self, config_id, capture_type: str, params=None, slot_params=None):
         self.config_id = config_id
         self.capture_type = capture_type
         self.params = params
         self.slot_params = slot_params or {}
-
-
-from capturista.core.models import db as dba
 
 
 class Manager:
@@ -68,10 +65,9 @@ class Manager:
             d = ImageDraw.Draw(img)
             text = datetime.now().strftime("%Y-%m-%d %H:%M")
             font = ImageFont.truetype("capturista/static/fonts/SourceSans3-Regular.ttf", 40)
-            text_x, text_y = (2560 * 2) - 380, 50
+            text_x, text_y = (2560*2)-380, 50
             text_width, text_height = font.getmask(text).size
-            d.rectangle(((text_x - 15, text_y - 5), (text_x + text_width + 15, text_y + text_height + 30)),
-                        fill=(230, 100, 100, 100))
+            d.rectangle(((text_x-15, text_y-5), (text_x + text_width+15, text_y + text_height+30)), fill=(230, 100, 100, 100))
             d.text((text_x, text_y), text, font=font, fill=(70, 30, 30))
 
             img.save(img_path)
@@ -103,7 +99,8 @@ manager = Manager()
 LOADER_TYPES = {
     "web": WebLoader,
     "kibana": KibanaLoader,
-    "tableau": TableauLoader
+    "tableau": TableauLoader,
+    "aws_grafana":AWSGrafanaLoader
 }
 
 
@@ -161,6 +158,9 @@ class Consumer(threading.Thread):
         logging.info("Task Consumer stopped")
 
 
+csrf = CSRFProtect()
+
+
 def dynamic_slots(form):
     slot_fields = filter(lambda k: k.startswith('slot_'), form.keys())
 
@@ -172,22 +172,17 @@ def dynamic_slots(form):
 
     return slot_params
 
+
 def create_app() -> Flask:
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = str(uuid.uuid4())  # this should actually be a configurable static value
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///capturista.sqlite"
-    dba.init_app(app)
+    app.config['SECRET_KEY'] = "6592f711-2247-454a"
 
-    csrf = CSRFProtect()
     csrf.init_app(app)
+    # app.config.from_pyfile(config_filename)
 
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        #with app.app_context():
-        #    dba.create_all()
-
-        # Scheduler().start()
-        # Consumer().start()
-        pass
+        Scheduler().start()
+        Consumer().start()
 
     @app.route("/")
     def overview():
@@ -269,6 +264,8 @@ def create_app() -> Flask:
         for slot in t.input_slots:
             setattr(SlotForm, slot, StringField())
 
+        setattr(SlotForm, slot, StringField())
+
         class F(BaseSourceForm):
             slots = FormField(SlotForm)
 
@@ -276,6 +273,9 @@ def create_app() -> Flask:
 
         if 'password' in slot_params:
             slot_params['password'] = '****'
+
+        if 'api_token' in slot_params:
+            slot_params['api_token'] = '****'
 
         form = F(data=dict(
             name=cs.get('name'),
@@ -292,6 +292,10 @@ def create_app() -> Flask:
                 if slot_data['password'].strip() in ['', '****']:
                     # recover original password
                     slot_data['password'] = cs.get('slot_params').get('password')
+
+                if slot_data['api_token'].strip() in ['', '****']:
+                    # recover original api_token
+                    slot_data['api_token'] = cs.get('slot_params').get('api_token')
 
             new = dict(
                 name=f.get('name'),
@@ -322,3 +326,16 @@ def create_app() -> Flask:
     return app
 
 
+def main():
+    capture_configs = db.table('capture_configs')
+    print(capture_configs.all())
+
+    app = create_app()
+    app.run(
+        host=os.getenv("BIND", "0.0.0.0"),
+        port=os.getenv('PORT', 5000)
+    )
+
+
+if __name__ == '__main__':
+    main()
